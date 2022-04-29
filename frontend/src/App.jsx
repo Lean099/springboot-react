@@ -1,12 +1,16 @@
-function App() {
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.min.js'
+
+import { Route, Routes } from 'react-router-dom'
+import { Home } from './components/Home'
+
+export const App = ()=>{
   console.log(import.meta.env.VITE_NAME)
   console.log(import.meta.env.VITE_HELLO)
 
   return (
-    <div className="App">
-      Limpio
-    </div>
+      <Routes>
+        <Route exact path='/' element={<Home/>}/>
+      </Routes>
   )
 }
-
-export default App
