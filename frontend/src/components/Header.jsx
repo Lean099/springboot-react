@@ -12,9 +12,9 @@ export const Header = ()=>{
                 <div className="card-body d-flex">
                   <div className="col-8">
                     <h3 className="card-title">Username</h3>
-                    <p className="card-text">User Information:</p>
-                    <p className="card-text">Email: user@mail.com</p>
-                    <p className="card-text">Age: 19</p>
+                    <p className="card-text fw-light">User Information:</p>
+                    <p className="card-text fw-light my-1">Email: user@mail.com</p>
+                    <p className="card-text fw-light">Age: 19</p>
                   </div>
                   <div className="col-4">
                     <div className="d-flex">
@@ -22,8 +22,8 @@ export const Header = ()=>{
                       <p><span className="badge rounded-pill bg-dark ms-2">0</span> Answers</p>
                     </div>
                     <div className="d-flex">
-                     <button className="btn btn-danger btn-sm">Log Out</button>
-                     <EditPersonalData/>
+                      <button className="btn btn-danger btn-sm">Log Out</button>
+                      <EditPersonalData/>
                     </div>    
                   </div>
                 </div>

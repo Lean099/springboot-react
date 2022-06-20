@@ -9,10 +9,11 @@ export const EditPersonalData = ()=>{
   const [startDate, setStartDate] = useState(new Date());
   const [dataUser, setDataUser] =  useState({
     username: "",
-    age: new Date(),
+    dob: new Date(),
     email: "",
     password: ""
   })
+  const [dobInput, setDobInput] = useState(false)
 
   const handleChnage = (e)=>{
     setDataUser({
@@ -26,17 +27,9 @@ export const EditPersonalData = ()=>{
   }
 
   const disableInput = (e)=>{
-    console.log(document.getElementById(e.target.name))
-    console.log(document.getElementById(e.target.name).disabled)
-    const input = document.getElementById(e.target.name).disabled
-    if(input){
-      document.getElementById(e.target.name).disabled = false
-    }else{
-      document.getElementById(e.target.name).disabled = true
-    }
+    const input = document.getElementById(e.target.name)
+    input.disabled = !input.disabled
   }
-
-  console.log(dataUser)
 
   return(
     <div>
@@ -61,11 +54,13 @@ export const EditPersonalData = ()=>{
                                   </div>
                                 </div>
                                 <div>
-                                  <label for="age" class="form-label">Age</label>
-                                  
+                                  <label for="dob" class="form-label">Birthday Date</label>
+
                                   <div className="input-group">
-                                    <div><DatePicker className="form-control form-control-sm" name="age" id="age" dateFormat="dd/MM/yyyy" selected={startDate} onChange={(date) => setStartDate(date)} /></div>
-                                    <button class="btn btn-dark btn-sm" onClick={disableInput} type="button" name="age" id="fileInput" style={{zIndex: "0"}}>
+                                    <div>
+                                      <DatePicker disabled={dobInput} className="form-control form-control-sm" name="dob" id="dob" dateFormat="dd/MM/yyyy" selected={startDate} peekNextMonth showMonthDropdown showYearDropdown dropdownMode="select" onChange={(date) => setStartDate(date)} />
+                                    </div>
+                                    <button class="btn btn-dark btn-sm" onClick={ ()=>{ setDobInput(prev => !prev) } } type="button" name="dob" id="fileInput" style={{zIndex: "0"}}>
                                         <div class="btn-close btn-close-white btn-sm"></div>
                                     </button>
                                   </div>

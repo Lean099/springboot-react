@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 
 import { Route, Routes } from 'react-router-dom'
 import { Home } from './components/Home'
+import { Login } from './components/Login'
 
 export const App = ()=>{
   console.log(import.meta.env.VITE_NAME)
@@ -11,6 +12,7 @@ export const App = ()=>{
   return (
       <Routes>
         <Route exact path='/' element={<Home/>}/>
+        <Route exact path='/login' element={<Login/>}/>
       </Routes>
   )
 }

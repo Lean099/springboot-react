@@ -1,0 +1,5 @@
+Para hacer el renderizado condicional del boton de acciones que tiene las preguntas y respuestas,
+es simple, como todo eso lo vamos a traer del backend nos vendra en un array y esto obviamente
+lo tendremos que recorrer, cada uno ya sea respuesta o pregunta tendra su id al usuario que creo esa
+pregunta o respuesta, simplemente comparamos con un condicional si el id es igual o no, si lo es se
+mostrara sino no.
