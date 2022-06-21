@@ -17,11 +17,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name = "questions")
+@Table(name = "answers")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
-public class Question {
+public class Answer {
 
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "org.hibernate.id.UUIDGenerator")
@@ -29,14 +29,14 @@ public class Question {
     @Id
     private String id;
     @ManyToOne
-    @JoinColumn(name = "id_user_question")
-    private User idUserQuestion;
+    @JoinColumn(name = "id_user_answer")
+    private User idUserAnswer;
     private String username;
     private String content;
+    @OneToOne
+    @JoinColumn(name = "id_question")
+    private Question idQuestion;
     private Date date;
-    private String idAnswer;
-    @OneToOne(mappedBy = "idQuestion")
-    private Answer answer;
 
     public String getId() {
         return id;
@@ -46,12 +46,12 @@ public class Question {
         this.id = id;
     }
 
-    public String getIdUserQuestion() {
-        return idUserQuestion.getId();
+    public String getIdUserAnswer() {
+        return idUserAnswer.getId();
     }
 
-    public void setIdUserQuestion(User idUserQuestion) {
-        this.idUserQuestion = idUserQuestion;
+    public void setIdUserAnswer(User idUserAnswer) {
+        this.idUserAnswer = idUserAnswer;
     }
 
     public String getContent() {
@@ -62,32 +62,20 @@ public class Question {
         this.content = content;
     }
 
+    public String getIdQuestion() {
+        return idQuestion.getId();
+    }
+
+    public void setIdQuestion(Question idQuestion) {
+        this.idQuestion = idQuestion;
+    }
+
     public Date getDate() {
         return date;
     }
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public String getIdAnswer(){
-        return idAnswer;
-    }
-
-    public void setIdAnswer(Answer answer){
-        if(answer == null){
-            this.idAnswer = null;
-        }else{
-            this.idAnswer = answer.getId();
-        }
-    }
-
-    public Answer getAnswer(){
-        return answer;
-    }
-
-    public void setAnswer(Answer answer){
-        this.answer = answer;
     }
 
     public String getUsername(){

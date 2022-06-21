@@ -1,22 +1,44 @@
 package com.leandro.backend.models;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "users")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class User {
 
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
-    @Column(columnDefinition = "CHAR(32)")
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", columnDefinition = "CHAR(36)")
     @Id
     private String id;
-    private String name;
-    private Integer age;
+    private String username;
+    private Date dob;
     private String email;
     private String password;
+    private String picturePublicId;
+    private String pictureUrl;
+
+    @OneToMany(mappedBy = "idUserQuestion")
+    private List<Question> questionsList;
+
+    @OneToMany(mappedBy = "idUserAnswer")
+    private List<Answer> answersList;
 
     public String getId() {
         return id;
@@ -26,20 +48,20 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Integer getAge() {
-        return age;
+    public Date getDob() {
+        return dob;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
 
     public String getEmail() {
@@ -56,6 +78,38 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPicturePublicId() {
+        return picturePublicId;
+    }
+
+    public void setPicturePublicId(String picturePublicId) {
+        this.picturePublicId = picturePublicId;
+    }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
+    public List<Question> getQuestionsList(){
+        return questionsList;
+    }
+
+    public void setQuestionsList(List<Question> questionsList){
+        this.questionsList = questionsList;
+    }
+
+    public List<Answer> getAnswersList(){
+        return answersList;
+    }
+
+    public void setAnswersList(List<Answer> answersList){
+        this.answersList = answersList;
     }
 
 }

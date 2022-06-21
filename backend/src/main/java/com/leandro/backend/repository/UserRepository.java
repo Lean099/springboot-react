@@ -10,14 +10,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     @Modifying
-    @Query("update User u set u.name = :name where u.id = :id")
-    void updateName(@Param(value = "id") String id,
-                    @Param(value = "name") String name);
+    @Query("update User u set u.username = :username where u.id = :id")
+    void updateUsername(@Param(value = "id") String id,
+                        @Param(value = "username") String username);
 
     @Modifying
-    @Query("update User u set u.age = :age where u.id = :id")
-    void updateAge(@Param(value = "id") String id,
-                   @Param(value = "age") int age);
+    @Query("update User u set u.dob = :dob where u.id = :id")
+    void updateDob(@Param(value = "id") String id,
+                   @Param(value = "dob") java.util.Date date);
 
     @Modifying
     @Query("update User u set u.email = :email where u.id = :id")
@@ -28,4 +28,17 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("update User u set u.password = :password where u.id = :id")
     void updatePassword(@Param(value = "id") String id,
                         @Param(value = "password") String password);
+
+    @Modifying
+    @Query("update User u set u.picturePublicId = :publicId where u.id = :id")
+    void updatePicturePublicId(@Param(value="id") String id,
+                               @Param(value="publicId") String publicId);
+
+    @Modifying
+    @Query("update User u set u.pictureUrl = :url where u.id = :id")
+    void updatePictureUrl(@Param(value="id") String id,
+                          @Param(value="url") String url);
+
+    User findByUsername(String username);
+
 }

@@ -10,30 +10,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
+    @RequestMapping(value = "api/user/create", method = RequestMethod.POST)
+    public User createUser(@RequestBody User user){
+        return userService.saveUser(user);
+    }
+
     @RequestMapping(value = "api/user", method = RequestMethod.GET)
-    public List<User> getUsers() {
+    public List<User> getUsers(){
         return userService.getAllUsers();
     }
 
     @RequestMapping(value = "api/user/{id}", method = RequestMethod.GET)
-    public Optional<User> getSingleUser(@PathVariable String id) {
+    public Optional<User> getSingleUser(@PathVariable String id){
         return userService.getUser(id);
     }
 
-    @RequestMapping(value = "api/user/nameAndAge/{id}", method = RequestMethod.POST)
-    public Optional<User> updateNameAndAge(@PathVariable String id, @RequestBody User user) {
-        return userService.modifyPersonalDataUser(id, user.getName(), user.getAge());
+    @RequestMapping(value = "api/user/usernameAndDob/{id}", method = RequestMethod.POST)
+    public Optional<User> updateUsernameAndDob(@PathVariable String id, @RequestBody User user){
+        return userService.modifyPersonalDataUser(id, user.getUsername(), user.getDob());
     }
 
     @RequestMapping(value = "api/user/emailAndPassword/{id}", method = RequestMethod.POST)
-    public Optional<User> updateEmailAndPassword(@PathVariable String id, @RequestBody User user) {
+    public Optional<User> updateEmailAndPassword(@PathVariable String id, @RequestBody User user){
+        System.out.println(id + " " + user.getEmail() + " " + user.getPassword());
         return userService.modifyEmailAndPasswordUser(id, user.getEmail(), user.getPassword());
-
     }
+
+    @RequestMapping(value = "api/user/deleteUser/{idUser}", method = RequestMethod.DELETE)
+    public String deleteUser(@PathVariable String idUser){
+        return userService.deleteUserAndAllHisInformation(idUser);
+    }
+
 }
