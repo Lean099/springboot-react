@@ -1,11 +1,27 @@
-import { useState } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { BtnActions } from './BtnActions'
+import { Context } from './Home'
+import axios from 'axios'
+import { TYPES } from '../actions/pageAction'
 
 export const QuestionsAndAnswers = ()=>{
 
+  const context = useContext(Context)
   const [question, setQuestion] = useState(false)
   const [mod, setMod] = useState(false)
   const [ans, setAns] = useState(false)
+
+  useEffect(()=>{
+    fetchData()
+  }, [])
+
+  const fetchData = ()=>{
+    axios.get(`${import.meta.env.VITE_API_DOMAIN}/api/question/`)
+    .then(res => {
+      context.pageDispatch({type: TYPES.ADD_QUESTIONS_ANSWERS, payload: res.data})
+    })
+    .catch(err => console.log(err))
+  }
 
   const editQuestion = ()=>{
     if(mod){
@@ -31,6 +47,7 @@ export const QuestionsAndAnswers = ()=>{
     }
   }
 
+  console.log(context.pageState)
   return(
     <div className="mt-2">
       <hr />

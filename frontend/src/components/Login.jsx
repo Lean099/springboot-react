@@ -1,11 +1,14 @@
 import axios from 'axios'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useCookies } from "react-cookie";
+import { Context } from './Home'
+import { TYPES } from '../actions/pageAction'
 
 export const Login = ()=>{
 
     const [dataForm, setDataForm] = useState({username: "", password: ""})
     const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+    const context = useContext(Context)
 
     const handleChange = (e)=>{
         setDataForm(
@@ -16,14 +19,13 @@ export const Login = ()=>{
         )
     }
 
-    const handleCookie = (token)=>{
+    const handleCookie = (data)=>{
         const date = new Date()
-        setCookie("token", token?.access_token, {
+        setCookie("token", data?.access_token, {
             path: "/",
             expires: date.setMinutes(date.getMinutes + 10),
             maxAge: 600
         })
-        // Faltaria agregar esa cookie al contexto de la aplicacion
     }
 
     const submitForm = (e)=>{
@@ -34,14 +36,16 @@ export const Login = ()=>{
         try {
             const response = axios({
                 method: "post",
-                url: "https://8080-lean099-learnsbgitpod-oxuz64x7mr5.ws-us47.gitpod.io/login",
+                url: `${import.meta.env.VITE_API_DOMAIN}/login`,
                 data: loginFormData,
                 headers: { 
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
             });
             response.then(res => {
+                // el res.data es simplemente un objeto {...} dentro tiene las propiedades access_token e id_user
                 handleCookie(res.data)
+                context.pageDispatch({ type: TYPES.LOGIN, payload: res.data })
             })
         } catch (error) {
             console.log(error)
@@ -58,7 +62,7 @@ export const Login = ()=>{
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" onChange={handleChange} value={dataForm.password}/>
             </div>
-            
+            {context.pageState.isAuthenticated +" "+ context.pageState.token +" "+ context.pageState.idUser}
             <button type="submit" class="btn btn-primary btn-sm">Log In</button>
         </form>
     )

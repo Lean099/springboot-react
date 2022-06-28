@@ -5,18 +5,12 @@ import { QuestionsAndAnswers } from './QuestionsAndAnswers'
 import { SortQA } from './SortQA'
 
 import { initialState, pageReducer } from '../reducers/pageReducer'
-import { TYPES } from '../actions/pageAction'
 export const Context = React.createContext()
 
 
 export const Home = ()=>{
 
   const [state, dispatch] = useReducer(pageReducer, initialState)
-
-  // consulta axios
-  useEffect(()=>{
-    // dispatch
-  }, [/*res.data*/])
 
   return(
     <Context.Provider value={{ pageState: state, pageDispatch: dispatch }}>

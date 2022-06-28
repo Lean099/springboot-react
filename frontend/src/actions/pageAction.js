@@ -1,3 +1,4 @@
 export const TYPES = {
-    LOGIN: 'LOGIN'
+    LOGIN: 'LOGIN',
+    ADD_QUESTIONS_ANSWERS: 'ADD_QUESTIONS_ANSWERS'
 }

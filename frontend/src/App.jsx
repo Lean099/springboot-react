@@ -12,7 +12,6 @@ export const App = ()=>{
   return (
       <Routes>
         <Route exact path='/' element={<Home/>}/>
-        <Route exact path='/login' element={<Login/>}/>
       </Routes>
   )
 }
