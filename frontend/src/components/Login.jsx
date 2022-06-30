@@ -52,6 +52,7 @@ export const Login = ()=>{
         }
     }
 
+    console.log(cookies)
     return(
         <form onSubmit={submitForm}>
             <div class="mb-3">
