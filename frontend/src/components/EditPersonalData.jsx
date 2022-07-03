@@ -1,29 +1,39 @@
-import { useState } from "react";
+import axios from "axios";
+import { useState, useContext } from "react";
 import DatePicker from "react-datepicker";
+import { useCookies } from "react-cookie";
+import { Context } from './Home'
+import { TYPES } from '../actions/pageAction'
 
 import "react-datepicker/dist/react-datepicker.css";
 
 export const EditPersonalData = ()=>{
 
-  const [file, setFile] = useState("")
-  const [startDate, setStartDate] = useState(new Date());
+  const context = useContext(Context)
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "id_user"])
+  const [file, setFile] = useState(null)
+  const [startDate, setStartDate] = useState(null)
   const [dataUser, setDataUser] =  useState({
     username: "",
-    dob: new Date(),
     email: "",
     password: ""
   })
   const [dobInput, setDobInput] = useState(false)
 
-  const handleChnage = (e)=>{
+  const handleChange = (e)=>{
     setDataUser({
       ...dataUser,
       [e.target.name] : e.target.value
     })
   }
 
-  const resetInputFile = ()=>{
-    document.getElementById("fileInput").value = "";
+  const handleFile = (e)=>{
+    setFile(e.target.files[0])
+  }
+
+  const resetInputFile = (e)=>{
+    document.getElementById(e.target.name).value = "";
+    setFile(null)
   }
 
   const disableInput = (e)=>{
@@ -31,24 +41,85 @@ export const EditPersonalData = ()=>{
     input.disabled = !input.disabled
   }
 
+  const updateUserData = ()=>{
+    const userData = JSON.stringify({
+      "username": dataUser.username!=="" ? dataUser.username : null,
+      "dob": startDate!==null ? startDate : null
+    })
+    axios({
+      method: 'post',
+      url: `${import.meta.env.VITE_API_DOMAIN}/api/user/usernameAndDob/${cookies.id_user}`,
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      data: userData
+    }).then(res =>{
+      context.pageDispatch({ type: TYPES.UPDATE_USERNAME_DOB, payload: res.data })
+    }).catch(error => console.log(error))
+  }
+
+  const updateCredentials = ()=>{
+    const credentials = JSON.stringify({
+      "email": dataUser.email!=="" ? dataUser.email : null,
+      "password": dataUser.password!=="" ? dataUser.password : null
+    })
+    axios({
+      method: 'post',
+      url: `${import.meta.env.VITE_API_DOMAIN}/api/user/emailAndPassword/${cookies.id_user}`,
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      data: credentials
+    }).then(res => {
+      context.pageDispatch({type: TYPES.UPDATE_EMAIL, payload: res.data})
+    }).catch(error => console.log(error))
+  }
+
+  const updatePicture = ()=>{
+    const formData = new FormData()
+    formData.append('file', file)
+    axios({
+      method: 'post',
+      url: `${import.meta.env.VITE_API_DOMAIN}/api/upload/${cookies.id_user}`,
+      headers:{
+        'Content-Type': 'multipart/form-data'
+      },
+      data: formData
+    }).then(res =>{
+      context.pageDispatch({ type: TYPES.UPDATE_PICTURE_URL, payload: res.data })
+    }).catch(error => console.log(error))
+  }
+
+  const submitForm = ()=>{
+    e.preventDefault()
+    
+    
+    
+
+  }
+
+  console.log(dataUser)
+  console.log(file)
+  console.log(startDate)
+
   return(
     <div>
-      <button className="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit Personal Data</button>
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <button className="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#editPersonalDataModal">Edit Personal Data</button>
+      <div class="modal fade" id="editPersonalDataModal" tabindex="-1" aria-labelledby="editPersonalDataModalLabel" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Edit your data</h5>
+                            <h5 class="modal-title" id="editPersonalDataModalLabel">Edit your data</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            <form>
+                            <form onSubmit={submitForm}>
                               <div class="mb-3 d-flex justify-content-between">
                                 <div>
                                   <label for="username" class="form-label">Username</label>
                                   <div className="input-group">
-                                    <input onChange={handleChnage} type="email" class="form-control form-control-sm" name="username" id="username" aria-describedby="usernameHelp"/>
-                                    <button class="btn btn-dark btn-sm" onClick={disableInput} type="button" name="username" id="fileInput" style={{zIndex: "0"}}>
+                                    <input onChange={handleChange} type="text" class="form-control form-control-sm" name="username" id="username" aria-describedby="usernameHelp" value={dataUser.username}/>
+                                    <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, username: ""}); disableInput(e)}} type="button" name="username" id="fileInput" style={{zIndex: "0"}}>
                                         <div class="btn-close btn-close-white btn-sm"></div>
                                     </button>
                                   </div>
@@ -58,9 +129,9 @@ export const EditPersonalData = ()=>{
 
                                   <div className="input-group">
                                     <div>
-                                      <DatePicker disabled={dobInput} className="form-control form-control-sm" name="dob" id="dob" dateFormat="dd/MM/yyyy" selected={startDate} peekNextMonth showMonthDropdown showYearDropdown dropdownMode="select" onChange={(date) => setStartDate(date)} />
+                                      <DatePicker disabled={dobInput} className="form-control form-control-sm" name="dob" id="dob" dateFormat="dd/MM/yyyy" selected={startDate ? startDate : new Date()} peekNextMonth showMonthDropdown showYearDropdown dropdownMode="select" onChange={(date) => setStartDate(date)} />
                                     </div>
-                                    <button class="btn btn-dark btn-sm" onClick={ ()=>{ setDobInput(prev => !prev) } } type="button" name="dob" id="fileInput" style={{zIndex: "0"}}>
+                                    <button class="btn btn-dark btn-sm" onClick={ ()=>{ setStartDate(null); setDobInput(prev => !prev) } } type="button" name="dob" id="fileInput" style={{zIndex: "0"}}>
                                         <div class="btn-close btn-close-white btn-sm"></div>
                                     </button>
                                   </div>
@@ -71,8 +142,8 @@ export const EditPersonalData = ()=>{
                               <div class="mb-3">
                                 <label for="file" class="form-label">Select the profile image you want to upload.</label>
                                 <div class="input-group">
-                                    <input type="file" class="form-control form-control-sm" name="file" id="file" aria-describedby="img" aria-label="Upload"/>
-                                    <button class="btn btn-dark btn-sm" onClick={resetInputFile} type="button" id="fileInput" style={{zIndex: "0"}}>
+                                    <input type="file" onChange={handleFile} class="form-control form-control-sm" name="file" id="file" aria-describedby="img" aria-label="Upload"/>
+                                    <button class="btn btn-dark btn-sm" onClick={resetInputFile} type="button" id="fileInput" name="file" style={{zIndex: "0"}}>
                                         <div class="btn-close btn-close-white btn-sm"></div>
                                     </button>
                                 </div>
@@ -80,8 +151,8 @@ export const EditPersonalData = ()=>{
                               <div class="mb-3">
                                 <label for="email" class="form-label">Email address</label>
                                 <div className="input-group">
-                                  <input type="email" class="form-control form-control-sm" name="email" id="email" aria-describedby="emailHelp"/>
-                                  <button class="btn btn-dark btn-sm" onClick={disableInput} type="button" name="email" id="fileInput" style={{zIndex: "0"}}>
+                                  <input type="email" onChange={handleChange} class="form-control form-control-sm" name="email" id="email" aria-describedby="emailHelp" value={dataUser.email}/>
+                                  <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, email: ""}); disableInput(e)}} type="button" name="email" id="fileInput" style={{zIndex: "0"}}>
                                       <div class="btn-close btn-close-white btn-sm"></div>
                                   </button>
                                 </div>
@@ -89,8 +160,8 @@ export const EditPersonalData = ()=>{
                               <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <div className="input-group">
-                                  <input type="password" class="form-control form-control-sm" name="password" id="password"/>
-                                  <button class="btn btn-dark btn-sm" onClick={disableInput} type="button" name="password" id="fileInput" style={{zIndex: "0"}}>
+                                  <input type="password" onChange={handleChange} class="form-control form-control-sm" name="password" id="password" value={dataUser.password}/>
+                                  <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, password: ""}); disableInput(e)}} type="button" name="password" id="fileInput" style={{zIndex: "0"}}>
                                       <div class="btn-close btn-close-white btn-sm"></div>
                                   </button>
                                 </div>

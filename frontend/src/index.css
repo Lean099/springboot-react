@@ -1,3 +1,24 @@
-.collapseAnsBtnActions{
+.collapseAnswerBtnActions{
     margin-top: 5px;
+}
+
+.frameHeader{
+    height: 140px;      /* equals max image height */
+    width: 120px;
+    /*border: 1px solid red;*/
+    white-space: nowrap;
+    
+    text-align: center; margin: 1em 0;
+}
+
+.helper{
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#profilePicture{
+    vertical-align: middle;
+    height: 140px;      
+    width: 120px;
 }

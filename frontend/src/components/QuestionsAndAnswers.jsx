@@ -3,11 +3,17 @@ import { BtnActions } from './BtnActions'
 import { Context } from './Home'
 import axios from 'axios'
 import { TYPES } from '../actions/pageAction'
+import { Question } from './Question'
+import { Answer } from './Answer'
+import { useCookies } from "react-cookie";
 
 export const QuestionsAndAnswers = ()=>{
 
   const context = useContext(Context)
-  const [question, setQuestion] = useState(false)
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "id_user"]);
+  const [createAnswer, setCreateAnswer] = useState({idQuestion: "", create: false})
+  const [newAnswer, setNewAnswer] = useState("")
+  const [hasQuestion, setHasQuestion] = useState(false)
   const [mod, setMod] = useState(false)
   const [ans, setAns] = useState(false)
 
@@ -21,6 +27,15 @@ export const QuestionsAndAnswers = ()=>{
       context.pageDispatch({type: TYPES.ADD_QUESTIONS_ANSWERS, payload: res.data})
     })
     .catch(err => console.log(err))
+  }
+
+  const handleNewAnswer = (e)=>{
+    setNewAnswer(e.target.value)
+  }
+
+  const submitAnswer = ()=>{
+
+    // Al crear la nueva answer no olvidar de extraer el id del usuario logeado de la cookie o contexto
   }
 
   const editQuestion = ()=>{
@@ -40,14 +55,15 @@ export const QuestionsAndAnswers = ()=>{
   }
 
   const makeAQuestion = ()=>{
-    if(question){
-      setQuestion(false)
+    if(hasQuestion){
+      setHasQuestion(false)
     }else{
-      setQuestion(true)
+      setHasQuestion(true)
     }
   }
 
   console.log(context.pageState)
+  console.log(createAnswer)
   return(
     <div className="mt-2">
       <hr />
@@ -84,13 +100,14 @@ export const QuestionsAndAnswers = ()=>{
           
         </div>
 
+              { /* ANSWER */ }
         {
-          question ? (
+          hasQuestion ? (
             <div className="d-flex justify-content-between">
               <input className="form-control" type="text" value="Su apellido es Ramirez"/>
               <button onClick={makeAQuestion} className="btn btn-primary ms-2">Ask</button> 
             </div>
-          ) : 
+          ) : // Aca podemos hacer un codicional si la question tiene answer muestre el comp asnwers sino un input
           <div className="d-flex justify-content-between">
               <div className="d-flex">
                 {
@@ -110,6 +127,34 @@ export const QuestionsAndAnswers = ()=>{
         
         <hr/>
       </div>
+
+      {
+        context.pageState.allQuestionsAndAnswers && (
+          context.pageState.allQuestionsAndAnswers.map(question => {
+            return(
+              <div key={question.id}>
+
+                <Question question={question} createAnswer={ (id)=>setCreateAnswer((prev) => ({idQuestion: id, create: !prev.create})) } idUserLogged={cookies.id_user}/>
+                {
+          // La propiedad answer existe en question, pero si no tiene un objeto con los datos de la answer tendra un null
+                  question.answer ? 
+                    <Answer answer={question.answer} idUserLogged={cookies.id_user}/>
+                  :
+                  (createAnswer.create && question.id==createAnswer.idQuestion) && (
+                    <div className="d-flex" style={{width: "750px"}}>
+                      <input type="text" onChange={handleNewAnswer} className="form-control me-2" name="newAnswer" value={newAnswer}/>
+                      <button onClick={submitAnswer} className="btn btn-primary btn-sm">Send</button>
+                    </div>
+                  )
+                }
+                
+                <hr />
+              </div>
+            )
+          })
+          
+        )
+      }
 
     </div>
   )

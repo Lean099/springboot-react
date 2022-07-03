@@ -26,6 +26,27 @@ export const Login = ()=>{
             expires: date.setMinutes(date.getMinutes + 10),
             maxAge: 600
         })
+        setCookie("id_user", data?.id_user, {
+            path: "/",
+            expires: date.setMinutes(date.getMinutes + 10),
+            maxAge: 600
+        })
+    }
+
+    const getUserData = (data)=>{
+        const response = axios({
+            method: "get",
+            url: `${import.meta.env.VITE_API_DOMAIN}/api/user/${data.id_user}`,
+            headers: { 'Authorization': `Bearer ${data?.access_token}` }
+        })
+        response.then(res => {
+            // Es un simple objeto con props: id, dob, picturePublicId, pictureUrl, username, email, questionsList, answersList
+            context.pageDispatch({ type: TYPES.LOGIN, payload: res.data })
+        })
+        document.getElementById("modalLoginRegister").classList.remove("show", "d-block");
+		document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop"));
+        document.getElementsByTagName("body")[0].style = ''
+		document.getElementsByTagName("body")[0].classList.remove('modal-open')
     }
 
     const submitForm = (e)=>{
@@ -45,14 +66,13 @@ export const Login = ()=>{
             response.then(res => {
                 // el res.data es simplemente un objeto {...} dentro tiene las propiedades access_token e id_user
                 handleCookie(res.data)
-                context.pageDispatch({ type: TYPES.LOGIN, payload: res.data })
+                getUserData(res.data)
             })
         } catch (error) {
             console.log(error)
         }
     }
 
-    console.log(cookies)
     return(
         <form onSubmit={submitForm}>
             <div class="mb-3">
@@ -63,7 +83,6 @@ export const Login = ()=>{
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" onChange={handleChange} value={dataForm.password}/>
             </div>
-            {context.pageState.isAuthenticated +" "+ context.pageState.token +" "+ context.pageState.idUser}
             <button type="submit" class="btn btn-primary btn-sm">Log In</button>
         </form>
     )
