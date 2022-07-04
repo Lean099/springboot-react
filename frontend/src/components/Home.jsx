@@ -18,7 +18,6 @@ export const Home = ()=>{
 
   useEffect(()=>{
     if(cookies?.token && cookies?.id_user && state.isAuthenticated===false){
-      console.log("Dentro del useEffect")
       const response = axios({
         method: "get",
         url: `${import.meta.env.VITE_API_DOMAIN}/api/user/${cookies?.id_user}`,
@@ -35,7 +34,7 @@ export const Home = ()=>{
       <div class="container" style={{maxWidth: "1000px"}}>
           <Header/>
           <Input/>
-          <SortQA/>
+          { state.isAuthenticated && <SortQA/> }
           <QuestionsAndAnswers/>
       </div>
     </Context.Provider> 

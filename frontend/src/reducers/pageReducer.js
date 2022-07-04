@@ -11,7 +11,8 @@ export const initialState = {
       picturePublicId: null,
       questions: null
     },
-    allQuestionsAndAnswers: null
+    allQuestionsAndAnswers: null,
+    order: 'all'
 }
   
 export function pageReducer(state, action){
@@ -29,6 +30,15 @@ export function pageReducer(state, action){
           picturePublicId: action.payload.picturePublicId,
           questions: action.payload.questionsList
         }}
+      }
+      case TYPES.ALL_QUESTIONS:{
+        return {...state, allQuestionsAndAnswers: action.payload, order: 'all'}
+      }
+      case TYPES.MY_QUESTIONS:{
+        return {...state, allQuestionsAndAnswers: action.payload, order: 'my_questions'}
+      }
+      case TYPES.MY_ANSWERS:{
+        return {...state, allQuestionsAndAnswers: action.payload, order: 'my_answers'}
       }
       default:
         return state

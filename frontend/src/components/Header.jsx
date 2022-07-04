@@ -34,7 +34,7 @@ export const Header = ()=>{
                     </div>
                     <div className="d-flex">
                       {
-                        !context.pageState.isAuthenticated ? (
+                        context.pageState.isAuthenticated ? (
                           <React.Fragment>
                             <button className="btn btn-danger btn-sm">Log Out</button>
                             <EditPersonalData/>
