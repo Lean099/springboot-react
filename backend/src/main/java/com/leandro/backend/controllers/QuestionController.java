@@ -25,12 +25,12 @@ public class QuestionController {
         return questionService.getAllQuestions();
     }
 
-    @RequestMapping(value = "api/question/findAllByIdUserQuestion/", method = RequestMethod.GET)
+    @RequestMapping(value = "api/question/findAllByIdUserQuestion/", method = RequestMethod.POST)
     public List<Question> getAllByIdUserQuestions(@RequestBody User idUserQuestion){
         return questionService.getAllByIdUserQuestions(idUserQuestion);
     }
 
-    @RequestMapping(value = "api/question/findAllQuestionsRelatedToAnswers/", method = RequestMethod.GET)
+    @RequestMapping(value = "api/question/findAllQuestionsRelatedToAnswers/", method = RequestMethod.POST)
     public List<Question> getAllQuestionsRelatedToAnswers(@RequestBody User idUser){
         return questionService.findAllQuestionsRelatedToAnswers(idUser);
     }
