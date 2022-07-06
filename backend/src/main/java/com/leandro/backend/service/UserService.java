@@ -89,8 +89,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public Optional<User> setPicturePublicIdAndPictureUrl(String id, String publicId, String url){
-        userRepository.updatePicturePublicId(id, publicId);
-        userRepository.updatePictureUrl(id, url);
+        userRepository.updatePicturePublicId(id, publicId!="" ? publicId : null);
+        userRepository.updatePictureUrl(id, url!="" ? url : null);
         return getUser(id);
     }
 

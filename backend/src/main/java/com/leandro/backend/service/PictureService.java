@@ -26,9 +26,11 @@ public class PictureService{
         cloudinaryConfig.writeFileToUploadFolder(fileBytes, originalFilename);
         Boolean hasAPicture = hasAPicture(idUser);
         if(hasAPicture){
-            String prevPicPublicId = userService.getUser(idUser).get().getPicturePublicId();
+            User user = userService.getUser(idUser).get();
+            Picture pic = pictureRepository.findByPublicId(user.getPicturePublicId()).get();
             try {
-                cloudinaryConfig.cloudinaryConfig().uploader().destroy(prevPicPublicId, ObjectUtils.emptyMap());
+                cloudinaryConfig.cloudinaryConfig().uploader().destroy(user.getPicturePublicId(), ObjectUtils.emptyMap());
+                pictureRepository.deleteById(pic.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -80,10 +82,11 @@ public class PictureService{
             return false;
         }else{
             Optional<Picture> picture = pictureRepository.findByPublicId(publicId);
-            if(picture.get().getPublicId() == publicId){
+            if(picture.get().getPublicId().equals(publicId)){
                 return true;
+            }else{
+                return false;
             }
-            return false;
         }
     }
 

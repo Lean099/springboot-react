@@ -37,7 +37,6 @@ public class UserController {
 
     @RequestMapping(value = "api/user/emailAndPassword/{id}", method = RequestMethod.POST)
     public Optional<User> updateEmailAndPassword(@PathVariable String id, @RequestBody User user){
-        System.out.println(id + " " + user.getEmail() + " " + user.getPassword());
         return userService.modifyEmailAndPasswordUser(id, user.getEmail(), user.getPassword());
     }
 
