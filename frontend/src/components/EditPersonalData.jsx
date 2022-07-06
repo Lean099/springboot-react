@@ -50,7 +50,8 @@ export const EditPersonalData = ()=>{
       method: 'post',
       url: `${import.meta.env.VITE_API_DOMAIN}/api/user/usernameAndDob/${cookies.id_user}`,
       headers:{
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cookies.token}`
       },
       data: userData
     }).then(res =>{
@@ -67,7 +68,8 @@ export const EditPersonalData = ()=>{
       method: 'post',
       url: `${import.meta.env.VITE_API_DOMAIN}/api/user/emailAndPassword/${cookies.id_user}`,
       headers:{
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cookies.token}`
       },
       data: credentials
     }).then(res => {
@@ -82,7 +84,8 @@ export const EditPersonalData = ()=>{
       method: 'post',
       url: `${import.meta.env.VITE_API_DOMAIN}/api/upload/${cookies.id_user}`,
       headers:{
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${cookies.token}`
       },
       data: formData
     }).then(res =>{
@@ -90,12 +93,48 @@ export const EditPersonalData = ()=>{
     }).catch(error => console.log(error))
   }
 
-  const submitForm = ()=>{
-    e.preventDefault()
-    
-    
-    
+  const deleteCurrentPicture = ()=>{
+    axios({
+      method: 'post',
+      url: `${import.meta.env.VITE_API_DOMAIN}/api/upload/deleteUserPicture/${cookies.id_user}`,
+      headers: {
+        'Authorization': `Bearer ${cookies.token}`
+      }
+    })
+    .then(res => context.pageDispatch({type: TYPES.UPDATE_PICTURE_URL, payload: null}))
+    .catch(error => console.log(error))
+  }
 
+  const submitForm = (e)=>{
+    e.preventDefault()
+    if(file){
+      updatePicture()
+    }
+    if(dataUser.username || startDate){
+      updateUserData()
+    }
+    if(dataUser.email || dataUser.password){
+      updateCredentials()
+    }
+  }
+
+  // Falta el eliminar cuenta, crear un boton y una funcion para que envie la request
+  const removeAccount = ()=>{
+    // res.data === "The user has been deleted"
+    // Como no me va a mandar toda la informacion del user que borre directamente hago que se recarge la app
+    axios({
+      method: 'delete',
+      url: `${import.meta.env.VITE_API_DOMAIN}/api/user/deleteUser/${cookies.id_user}`,
+      headers: {
+        'Authorization': `Bearer ${cookies.token}`
+      }
+    })
+    .then(res => {
+      context.pageDispatch({type: TYPES.LOGOUT})
+      // Falta cerrar los modals
+      window.location.reload()
+    })
+    .catch(error => console.log(error))
   }
 
   console.log(dataUser)
@@ -105,77 +144,82 @@ export const EditPersonalData = ()=>{
   return(
     <div>
       <button className="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#editPersonalDataModal">Edit Personal Data</button>
+      
       <div class="modal fade" id="editPersonalDataModal" tabindex="-1" aria-labelledby="editPersonalDataModalLabel" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="editPersonalDataModalLabel">Edit your data</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            <form onSubmit={submitForm}>
-                              <div class="mb-3 d-flex justify-content-between">
-                                <div>
-                                  <label for="username" class="form-label">Username</label>
-                                  <div className="input-group">
-                                    <input onChange={handleChange} type="text" class="form-control form-control-sm" name="username" id="username" aria-describedby="usernameHelp" value={dataUser.username}/>
-                                    <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, username: ""}); disableInput(e)}} type="button" name="username" id="fileInput" style={{zIndex: "0"}}>
-                                        <div class="btn-close btn-close-white btn-sm"></div>
-                                    </button>
-                                  </div>
-                                </div>
-                                <div>
-                                  <label for="dob" class="form-label">Birthday Date</label>
-
-                                  <div className="input-group">
-                                    <div>
-                                      <DatePicker disabled={dobInput} className="form-control form-control-sm" name="dob" id="dob" dateFormat="dd/MM/yyyy" selected={startDate ? startDate : new Date()} peekNextMonth showMonthDropdown showYearDropdown dropdownMode="select" onChange={(date) => setStartDate(date)} />
-                                    </div>
-                                    <button class="btn btn-dark btn-sm" onClick={ ()=>{ setStartDate(null); setDobInput(prev => !prev) } } type="button" name="dob" id="fileInput" style={{zIndex: "0"}}>
-                                        <div class="btn-close btn-close-white btn-sm"></div>
-                                    </button>
-                                  </div>
-                                  
-                                </div>
-                                
-                              </div>
-                              <div class="mb-3">
-                                <label for="file" class="form-label">Select the profile image you want to upload.</label>
-                                <div class="input-group">
-                                    <input type="file" onChange={handleFile} class="form-control form-control-sm" name="file" id="file" aria-describedby="img" aria-label="Upload"/>
-                                    <button class="btn btn-dark btn-sm" onClick={resetInputFile} type="button" id="fileInput" name="file" style={{zIndex: "0"}}>
-                                        <div class="btn-close btn-close-white btn-sm"></div>
-                                    </button>
-                                </div>
-                              </div>
-                              <div class="mb-3">
-                                <label for="email" class="form-label">Email address</label>
-                                <div className="input-group">
-                                  <input type="email" onChange={handleChange} class="form-control form-control-sm" name="email" id="email" aria-describedby="emailHelp" value={dataUser.email}/>
-                                  <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, email: ""}); disableInput(e)}} type="button" name="email" id="fileInput" style={{zIndex: "0"}}>
-                                      <div class="btn-close btn-close-white btn-sm"></div>
-                                  </button>
-                                </div>
-                              </div>
-                              <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <div className="input-group">
-                                  <input type="password" onChange={handleChange} class="form-control form-control-sm" name="password" id="password" value={dataUser.password}/>
-                                  <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, password: ""}); disableInput(e)}} type="button" name="password" id="fileInput" style={{zIndex: "0"}}>
-                                      <div class="btn-close btn-close-white btn-sm"></div>
-                                  </button>
-                                </div>
-                                
-                              </div>
-                              <button type="submit" class="btn btn-primary">Submit</button>
-                            </form>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          </div>
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editPersonalDataModalLabel">Edit your data</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+              <div class="modal-body">
+                <form onSubmit={submitForm}>
+                  <div class="mb-3 d-flex justify-content-between">
+                    <div>
+                      <label for="username" class="form-label">Username</label>
+                        <div className="input-group">
+                          <input onChange={handleChange} type="text" class="form-control form-control-sm" name="username" id="username" aria-describedby="usernameHelp" value={dataUser.username}/>
+                          <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, username: ""}); disableInput(e)}} type="button" name="username" id="fileInput" style={{zIndex: "0"}}>
+                            <div class="btn-close btn-close-white btn-sm"></div>
+                          </button>
                         </div>
-                      </div>
                     </div>
+                    <div>
+                      <label for="dob" class="form-label">Birthday Date</label>
+                      <div className="input-group">
+                        <div>
+                          <DatePicker disabled={dobInput} className="form-control form-control-sm" name="dob" id="dob" dateFormat="dd/MM/yyyy" selected={startDate ? startDate : new Date()} peekNextMonth showMonthDropdown showYearDropdown dropdownMode="select" onChange={(date) => setStartDate(date)} />
+                        </div>
+                        <button class="btn btn-dark btn-sm" onClick={ ()=>{ setStartDate(null); setDobInput(prev => !prev) } } type="button" name="dob" id="fileInput" style={{zIndex: "0"}}>
+                          <div class="btn-close btn-close-white btn-sm"></div>
+                        </button>
+                      </div>       
+                    </div>
+                                
+                  </div>
+                  <div class="mb-3">
+                    <label for="file" class="form-label">Select the profile image you want to upload. Or delete your current profile picture.</label>
+                    <div class="input-group">
+                      <input type="file" onChange={handleFile} class="form-control form-control-sm" name="file" id="file" aria-describedby="img" aria-label="Upload"/>
+                      <button class="btn btn-dark btn-sm" onClick={resetInputFile} type="button" id="fileInput" name="file" style={{zIndex: "0"}}>
+                        <div class="btn-close btn-close-white btn-sm"></div>
+                      </button>
+                      <button class="btn btn-danger btn-sm" onClick={deleteCurrentPicture}>Delete</button>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <div className="input-group">
+                      <input type="email" onChange={handleChange} class="form-control form-control-sm" name="email" id="email" aria-describedby="emailHelp" value={dataUser.email}/>
+                      <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, email: ""}); disableInput(e)}} type="button" name="email" id="fileInput" style={{zIndex: "0"}}>
+                        <div class="btn-close btn-close-white btn-sm"></div>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div className="input-group">
+                      <input type="password" onChange={handleChange} class="form-control form-control-sm" name="password" id="password" value={dataUser.password}/>
+                      <button class="btn btn-dark btn-sm" onClick={(e)=>{setDataUser({...dataUser, password: ""}); disableInput(e)}} type="button" name="password" id="fileInput" style={{zIndex: "0"}}>
+                        <div class="btn-close btn-close-white btn-sm"></div>
+                      </button>
+                    </div>       
+                  </div>
+
+                  <div className="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button className="btn btn-danger btn-sm">Remove Account</button>
+                  </div>
+                
+                  
+                </form>
+              </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

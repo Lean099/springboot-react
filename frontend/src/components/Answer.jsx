@@ -1,4 +1,6 @@
+import axios from "axios"
 import { useState, useContext } from "react"
+import { TYPES } from "../actions/pageAction"
 import { BtnActions } from './BtnActions'
 import { Context } from './Home'
 
@@ -15,11 +17,36 @@ export const Answer = (props)=>{
     }
 
     const deleteAnswer = ()=>{
-
+        axios({
+            method: 'delete',
+            url: `${import.meta.env.VITE_API_DOMAIN}/api/answer/${props.answer.id}`,
+            headers:{
+                'Authorization': `Bearer ${props.token}`
+            },
+            data:{}
+        })
+        .then(res => context.pageDispatch({type: TYPES.DELETE_ANSWER, payload: props.answer}))
+        .catch(error => console.log(error))
     }
 
     const submitEdit = ()=>{
-
+        const content = JSON.stringify({
+            "content": answer
+        })
+        axios({
+            method: 'post',
+            url: `${import.meta.env.VITE_API_DOMAIN}/api/answer/${props.answer.id}`,
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${props.token}`
+            },
+            data: content
+        })
+        .then(res => {
+            context.pageDispatch({type: TYPES.UPDATE_ANSWER , payload: res.data})
+            setEditAnswer(!editAnswer)
+        })
+        .catch(error => console.log(error))
     }
 
     return(

@@ -31,12 +31,25 @@ export const QuestionsAndAnswers = ()=>{
   }
 
   const submitAnswer = ()=>{
-
-    // Al crear la nueva answer no olvidar de extraer el id del usuario logeado de la cookie o contexto
+    const answer = JSON.stringify({
+      "content": newAnswer
+    })
+    axios({
+      method: 'post',
+      url: `${import.meta.env.VITE_API_DOMAIN}/api/answer/create/questionId/${createAnswer.idQuestion}/user/${cookies.id_user}`,
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cookies.token}`
+      },
+      data: answer
+    })
+    .then(res => context.pageDispatch({type: TYPES.NEW_ANSWER , payload: res.data}))
+    .catch(error => console.log(error))
   }
 
   console.log(context.pageState)
   console.log(createAnswer)
+  console.log(context.pageState.allQuestionsAndAnswers)
   return(
     <div className="mt-2">
       <hr />
@@ -45,13 +58,13 @@ export const QuestionsAndAnswers = ()=>{
         context.pageState.allQuestionsAndAnswers && (
           context.pageState.allQuestionsAndAnswers.map(question => {
             return(
-              <div key={question.id}>
+              <div>
 
-                <Question question={question} createAnswer={ (id)=>setCreateAnswer((prev) => ({idQuestion: id, create: !prev.create})) } idUserLogged={cookies.id_user}/>
+                <Question question={question} createAnswer={ (id)=>setCreateAnswer((prev) => ({idQuestion: id, create: !prev.create})) } idUserLogged={cookies.id_user} token={cookies.token}/>
                 {
           // La propiedad answer existe en question, pero si no tiene un objeto con los datos de la answer tendra un null
                   question.answer ? 
-                    <Answer answer={question.answer} idUserLogged={cookies.id_user}/>
+                    <Answer answer={question.answer} idUserLogged={cookies.id_user} token={cookies.token}/>
                   :
                   (createAnswer.create && question.id==createAnswer.idQuestion) && (
                     <div className="d-flex" style={{width: "750px"}}>

@@ -1,4 +1,6 @@
+import axios from 'axios'
 import { useState, useContext } from 'react'
+import { TYPES } from '../actions/pageAction'
 import { BtnActions } from './BtnActions'
 import { Context } from './Home'
 
@@ -14,11 +16,36 @@ export const Question = (props)=>{
     }
 
     const deleteQuestion = ()=>{
-
+        axios({
+            method: 'delete',
+            url: `${import.meta.env.VITE_API_DOMAIN}/api/question/${props.question.id}`,
+            headers:{
+                'Authorization': `Bearer ${props.token}`
+            },
+            data:{}
+        }) // simplemente retorna un string -> Question deleted con status 200, me imagino que sera lo mismo para las answer
+        .then(res => context.pageDispatch({type: TYPES.DELETE_QUESTION, payload: props.question.id}))
+        .catch(error => console.log(error))
     }
 
     const submitEdit = ()=>{
-
+        const content = JSON.stringify({
+            "content": question
+        })
+        axios({
+            method: 'post',
+            url: `${import.meta.env.VITE_API_DOMAIN}/api/question/${props.question.id}`,
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${props.token}`
+            },
+            data: content
+        }) // El res.data retorna un objeto {} dentro las props id, idUserQuestion, content, etc..
+        .then(res => {
+            context.pageDispatch({type: TYPES.UPDATE_QUESTION, payload: res.data})
+            setEditQuestion(!editQuestion)
+        })
+        .catch(error => console.log(error))
     }
 
     return(
