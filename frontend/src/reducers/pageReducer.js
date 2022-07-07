@@ -46,7 +46,6 @@ export function pageReducer(state, action){
         return {...state, allQuestionsAndAnswers: action.payload, order: 'my_answers'}
       }
       case TYPES.NEW_QUESTION:{
-        //let newQuestionInArr = [...state.allQuestionsAndAnswers, action.payload].slice()
         return {...state, allQuestionsAndAnswers: [...state.allQuestionsAndAnswers, action.payload]}
       }
       case TYPES.NEW_ANSWER:{

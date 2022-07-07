@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleRight,  faTrashCan, faPenToSquare, faMessage } from '@fortawesome/free-solid-svg-icons'
 
-                          // modifyOrCreateAAnswer - makeAQuestion
 export const BtnActions = ({edit, createAnswerToQuestion, deleteEntity, propertyValue, id})=>{
   return(
     <div className={"d-flex "+ propertyValue}>

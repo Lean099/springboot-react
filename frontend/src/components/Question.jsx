@@ -6,7 +6,6 @@ import { Context } from './Home'
 
 export const Question = (props)=>{
 
-    // Dentro del state question en vez de "" recibiremos el content de la question que me viene por prop de la db
     const [question, setQuestion] = useState(props.question.content)
     const [editQuestion, setEditQuestion] = useState(false)
     const context = useContext(Context)
@@ -23,7 +22,7 @@ export const Question = (props)=>{
                 'Authorization': `Bearer ${props.token}`
             },
             data:{}
-        }) // simplemente retorna un string -> Question deleted con status 200, me imagino que sera lo mismo para las answer
+        })
         .then(res => context.pageDispatch({type: TYPES.DELETE_QUESTION, payload: props.question.id}))
         .catch(error => console.log(error))
     }
@@ -40,7 +39,7 @@ export const Question = (props)=>{
                 'Authorization': `Bearer ${props.token}`
             },
             data: content
-        }) // El res.data retorna un objeto {} dentro las props id, idUserQuestion, content, etc..
+        })
         .then(res => {
             context.pageDispatch({type: TYPES.UPDATE_QUESTION, payload: res.data})
             setEditQuestion(!editQuestion)
@@ -61,14 +60,12 @@ export const Question = (props)=>{
                     : 
                     <p className="h5">{props.question.content}</p>
                 }
-                {/* Aqui va el componente con los botones de accion */}
                 {
                     context.pageState.isAuthenticated && (props.idUserLogged===props.question.idUserQuestion ? 
                         props.question.answer!==null ?
                             <BtnActions edit={()=>setEditQuestion(!editQuestion)} deleteEntity={deleteQuestion} propertyValue={"collapseQuestionBtnActions"} id={props.question.id}/>
                             :
-                            // Por aca pasar el id de la question a la funcion createAnswer, comento el createAnswerToQuestion ya que no tiene sentido crear una respuesta para mi propia pregunta
-                            <BtnActions edit={()=>setEditQuestion(!editQuestion)} /*createAnswerToQuestion={()=>props.createAnswer(props.question.id)}*/ deleteEntity={deleteQuestion} propertyValue={"collapseQuestionBtnActions"} id={props.question.id}/>
+                            <BtnActions edit={()=>setEditQuestion(!editQuestion)} deleteEntity={deleteQuestion} propertyValue={"collapseQuestionBtnActions"} id={props.question.id}/>
                         :
                         !props.question.answer && ( <BtnActions createAnswerToQuestion={()=>props.createAnswer(props.question.id)} propertyValue={"collapseQuestionBtnActions"} id={props.question.id}/> )
                         )

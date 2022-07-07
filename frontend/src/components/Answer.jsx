@@ -6,8 +6,6 @@ import { Context } from './Home'
 
 export const Answer = (props)=>{
 
-    /* Este componente va a recibir por props dos cosas una el id de la question que servira al momento de querer
-    crear una answer para esa question, segundo un boleano para saber si el */
     const [answer, setAnswer] = useState(props.answer.content)
     const [editAnswer, setEditAnswer] = useState(false)
     const context = useContext(Context)
@@ -62,7 +60,6 @@ export const Answer = (props)=>{
                     :
                     <p className="lead">{props.answer.content}</p> 
                 }
-                {/* Aqui va el componente con los botones de accion */}
                 {
                     (context.pageState.isAuthenticated&&props.idUserLogged===props.answer.idUserAnswer) && (
                         <BtnActions edit={()=>setEditAnswer(!editAnswer)} deleteEntity={deleteAnswer} propertyValue={"collapseAnswerBtnActions"} id={props.answer.id}/>

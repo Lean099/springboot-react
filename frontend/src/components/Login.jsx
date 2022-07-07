@@ -40,7 +40,6 @@ export const Login = ()=>{
             headers: { 'Authorization': `Bearer ${data?.access_token}` }
         })
         response.then(res => {
-            // Es un simple objeto con props: id, dob, picturePublicId, pictureUrl, username, email, questionsList, answersList
             context.pageDispatch({ type: TYPES.LOGIN, payload: res.data })
         })
         document.getElementById("modalLoginRegister").classList.remove("show", "d-block");
@@ -64,7 +63,6 @@ export const Login = ()=>{
                 },
             });
             response.then(res => {
-                // el res.data es simplemente un objeto {...} dentro tiene las propiedades access_token e id_user
                 handleCookie(res.data)
                 getUserData(res.data)
             })
@@ -83,6 +81,7 @@ export const Login = ()=>{
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" onChange={handleChange} value={dataForm.password}/>
             </div>
+            <p class="fw-light">You can create a new user or use the examples like (same password for all):<br/>Username: Martin - Password: holamundo123 </p>
             <button type="submit" class="btn btn-primary btn-sm">Log In</button>
         </form>
     )

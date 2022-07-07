@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect } from 'react'
-import { BtnActions } from './BtnActions'
 import { Context } from './Home'
 import axios from 'axios'
 import { TYPES } from '../actions/pageAction'
@@ -43,13 +42,13 @@ export const QuestionsAndAnswers = ()=>{
       },
       data: answer
     })
-    .then(res => context.pageDispatch({type: TYPES.NEW_ANSWER , payload: res.data}))
+    .then(res => {
+      context.pageDispatch({type: TYPES.NEW_ANSWER , payload: res.data})
+      setNewAnswer("")
+    })
     .catch(error => console.log(error))
   }
 
-  console.log(context.pageState)
-  console.log(createAnswer)
-  console.log(context.pageState.allQuestionsAndAnswers)
   return(
     <div className="mt-2">
       <hr />
@@ -62,7 +61,6 @@ export const QuestionsAndAnswers = ()=>{
 
                 <Question question={question} createAnswer={ (id)=>setCreateAnswer((prev) => ({idQuestion: id, create: !prev.create})) } idUserLogged={cookies.id_user} token={cookies.token}/>
                 {
-          // La propiedad answer existe en question, pero si no tiene un objeto con los datos de la answer tendra un null
                   question.answer ? 
                     <Answer answer={question.answer} idUserLogged={cookies.id_user} token={cookies.token}/>
                   :
